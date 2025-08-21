@@ -3,6 +3,7 @@ import { Toaster } from "sonner";
 
 import Products from "./pages/Products";
 import ProductAdd from "./pages/ProductAdd";
+import ProductEdit from "./pages/ProductEdit";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Products />} />
           <Route path="/products/new" element={<ProductAdd />} />
+          <Route path="/products/:id/edit" element={<ProductEdit />} />
         </Routes>
         <Toaster />
       </BrowserRouter>

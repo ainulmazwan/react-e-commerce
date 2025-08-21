@@ -10,8 +10,9 @@ import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import Chip from "@mui/material/Chip";
 import Typography from "@mui/material/Typography";
-import { getProducts } from "../utils/api_products";
+import { getProducts, deleteProduct } from "../utils/api_products";
 import { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 
 import Header from "../components/Header";
 
@@ -31,6 +32,31 @@ export default function Products() {
       console.log(data);
     });
   }, [category, page]);
+
+  const handleProductDelete = async (id) => {
+    Swal.fire({
+      title: "Are you sure you want to delete this product?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      // once user confirm, then we delete the product
+      if (result.isConfirmed) {
+        // delete product and the backend
+        await deleteProduct(id);
+        // method #1 : remove from the state manually
+        // delete product from the state
+        // setProducts(products.filter((p) => p._id !== id));
+        // method #2 : get the new data from the backend
+        const updatedProducts = await getProducts(category, page);
+        setProducts(updatedProducts);
+        toast.success("Product has been deleted");
+      }
+    });
+  };
 
   return (
     <>
@@ -130,6 +156,8 @@ export default function Products() {
                     color="primary"
                     variant="contained"
                     sx={{ borderRadius: 5 }}
+                    component={Link}
+                    to={`/products/${product._id}/edit`}
                   >
                     Edit
                   </Button>
@@ -137,6 +165,9 @@ export default function Products() {
                     color="error"
                     variant="contained"
                     sx={{ borderRadius: 5 }}
+                    onClick={() => {
+                      handleProductDelete(product._id);
+                    }}
                   >
                     Delete
                   </Button>

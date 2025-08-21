@@ -16,7 +16,7 @@ import { useNavigate } from "react-router";
 const ProductAdd = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
-  const [description, setDesc] = useState("");
+  const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
   const [category, setCategory] = useState("");
 
@@ -59,7 +59,7 @@ const ProductAdd = () => {
             rows={3}
             fullWidth
             value={description}
-            onChange={(e) => setDesc(e.target.value)}
+            onChange={(e) => setDescription(e.target.value)}
           />
         </Box>
         <Box mb={2}>
