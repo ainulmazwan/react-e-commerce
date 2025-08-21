@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
@@ -10,13 +10,16 @@ import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import Chip from "@mui/material/Chip";
 import Typography from "@mui/material/Typography";
-import { getProducts, deleteProduct } from "../utils/api_products";
+import { getProducts, deleteProduct, getProduct } from "../utils/api_products";
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
+import { toast } from "sonner";
 
 import Header from "../components/Header";
 
 export default function Products() {
+  const navigate = useNavigate();
+
   // to store data from /products
   const [products, setProducts] = useState([]);
   // to track which page the user is in
@@ -56,6 +59,33 @@ export default function Products() {
         toast.success("Product has been deleted");
       }
     });
+  };
+
+  const handleAddToCart = async (id) => {
+    const product = await getProduct(id);
+    const cart = localStorage.getItem("cart")
+      ? JSON.parse(localStorage.getItem("cart"))
+      : [];
+    if (cart.find((product) => product._id === id)) {
+      const updatedCart = cart.map((product) => {
+        if (product._id === id) {
+          product.quantity += 1;
+        }
+        return product;
+      });
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+    } else {
+      const updatedCart = [
+        ...cart,
+        {
+          ...product,
+          quantity: 1,
+        },
+      ];
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+    }
+    toast.success("Product added to cart");
+    navigate("/cart");
   };
 
   return (
@@ -141,6 +171,9 @@ export default function Products() {
                   variant="contained"
                   color="primary"
                   sx={{ width: "100%" }}
+                  onClick={() => {
+                    handleAddToCart(product._id);
+                  }}
                 >
                   Add to Cart
                 </Button>
