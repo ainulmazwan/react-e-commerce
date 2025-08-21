@@ -5,10 +5,8 @@ import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
-import TableFooter from "@mui/material/TableFooter";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
 import { useState } from "react";
 import { Link } from "react-router";
 import Swal from "sweetalert2";
@@ -27,9 +25,8 @@ const CartPage = () => {
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonText: "Yes, remove it!",
     }).then(async (result) => {
-      // once user confirm, then we delete the product
       if (result.isConfirmed) {
         const updatedCart = cart.filter((p) => p._id !== id);
         setCart(updatedCart);
@@ -85,29 +82,42 @@ const CartPage = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {cart.map((product) => (
-              <TableRow key={product._id}>
-                <TableCell component="th" scope="row">
-                  {product.name}
-                </TableCell>
-                <TableCell align="right">${product.price}</TableCell>
-                <TableCell align="right">{product.quantity}</TableCell>
-                <TableCell align="right">
-                  ${product.price * product.quantity}
-                </TableCell>
-                <TableCell align="right">
-                  <Button
-                    variant="contained"
-                    color="error"
-                    onClick={() => {
-                      handleProductRemove(product._id);
-                    }}
-                  >
-                    Remove
-                  </Button>
-                </TableCell>
+            {cart.length === 0 ? (
+              <TableRow>
+                <TableCell>No products added yet</TableCell>
+                <TableCell align="right"></TableCell>
+                <TableCell align="right"></TableCell>
+                <TableCell
+                  sx={{ fontWeight: "bold" }}
+                  align="right"
+                ></TableCell>
+                <TableCell align="right"></TableCell>
               </TableRow>
-            ))}
+            ) : (
+              cart.map((product) => (
+                <TableRow key={product._id}>
+                  <TableCell component="th" scope="row">
+                    {product.name}
+                  </TableCell>
+                  <TableCell align="right">${product.price}</TableCell>
+                  <TableCell align="right">{product.quantity}</TableCell>
+                  <TableCell align="right">
+                    ${product.price * product.quantity}
+                  </TableCell>
+                  <TableCell align="right">
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => {
+                        handleProductRemove(product._id);
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
 
             <TableRow>
               <TableCell></TableCell>
