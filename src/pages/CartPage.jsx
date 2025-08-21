@@ -131,7 +131,13 @@ const CartPage = () => {
           </TableBody>
         </Table>
         <Box sx={{ display: "flex", justifyContent: "end" }}>
-          <Button variant="contained">Checkout</Button>
+          <Button
+            variant="contained"
+            sx={{ mt: 2 }}
+            disabled={cart.length === 0 ? true : false}
+          >
+            Checkout
+          </Button>
         </Box>
       </Container>
     </>
