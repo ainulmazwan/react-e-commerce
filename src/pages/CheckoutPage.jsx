@@ -16,12 +16,16 @@ import { useState, useEffect } from "react";
 import { getCart, updateCart } from "../utils/cart";
 import { toast } from "sonner";
 import validator from "email-validator";
+import { createOrder } from "../utils/api_orders";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const CheckoutPage = () => {
   // load the cart items from the local storage
   const [cart, setCart] = useState(getCart());
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const getCartTotal = () => {
     let total = 0;
@@ -31,12 +35,7 @@ const CheckoutPage = () => {
     return total;
   };
 
-  const validateEmail = (email) => {
-    let valid = false;
-    // validate if the email is an email
-    return valid;
-  };
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     // 1. make sure the name and email fields is not empty
     if (!name || !email) {
       toast.error("Please fill up all the fields");
@@ -44,6 +43,24 @@ const CheckoutPage = () => {
       // 2. make sure email is valid
       toast.error("Please use a valid email address");
     } else {
+      // 3. do checkout
+      try {
+        // open loading backdrop
+        setLoading(true);
+        // 3.1 get total price
+        const totalPrice = getCartTotal();
+        // 3.2 create order
+        const response = await createOrder(name, email, cart, totalPrice);
+        // 3.3 get the billplz url from the response
+        const billplz_url = response.billplz_url;
+        // 3.4 redirect the user to billplz payment page
+        window.location.href = billplz_url;
+      } catch (error) {
+        console.log(error);
+        toast.error(error.message);
+        // close the loading backdrop
+        setLoading(false);
+      }
     }
   };
 
@@ -52,7 +69,7 @@ const CheckoutPage = () => {
       <Header current="checkout" title="Checkout" />
       <Container maxWidth="lg" sx={{ textAlign: "center" }}>
         <Grid container spacing={2}>
-          <Grid item size={{ xs: 12, md: 6, lg: 6 }}>
+          <Grid size={{ xs: 12, md: 6, lg: 6 }}>
             <Typography variant="h5" mb={4}>
               Contact Information
             </Typography>
@@ -80,7 +97,7 @@ const CheckoutPage = () => {
               </Button>
             </Box>
           </Grid>
-          <Grid item size={{ xs: 12, md: 6, lg: 6 }}>
+          <Grid size={{ xs: 12, md: 6, lg: 6 }}>
             <Typography variant="h5">Your Order Summary</Typography>
             <TableContainer component={Paper}>
               <Table aria-label="simple table">
@@ -124,6 +141,12 @@ const CheckoutPage = () => {
           </Grid>
         </Grid>
       </Container>
+      <Backdrop
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </>
   );
 };
