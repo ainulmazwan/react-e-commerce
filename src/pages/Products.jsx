@@ -14,6 +14,7 @@ import { getProducts, deleteProduct, getProduct } from "../utils/api_products";
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
+import { addToCart } from "../utils/cart";
 
 import Header from "../components/Header";
 
@@ -61,36 +62,9 @@ export default function Products() {
     });
   };
 
-  const handleAddToCart = async (id) => {
-    const product = await getProduct(id);
-    const cart = localStorage.getItem("cart")
-      ? JSON.parse(localStorage.getItem("cart"))
-      : [];
-    if (cart.find((product) => product._id === id)) {
-      const updatedCart = cart.map((product) => {
-        if (product._id === id) {
-          product.quantity += 1;
-        }
-        return product;
-      });
-      localStorage.setItem("cart", JSON.stringify(updatedCart));
-    } else {
-      const updatedCart = [
-        ...cart,
-        {
-          ...product,
-          quantity: 1,
-        },
-      ];
-      localStorage.setItem("cart", JSON.stringify(updatedCart));
-    }
-    toast.success("Product added to cart");
-    navigate("/cart");
-  };
-
   return (
     <>
-      <Header />
+      <Header current="home" title="Welcome to My Store" />
       <Container
         sx={{
           display: "flex",
@@ -172,7 +146,7 @@ export default function Products() {
                   color="primary"
                   sx={{ width: "100%" }}
                   onClick={() => {
-                    handleAddToCart(product._id);
+                    addToCart(product);
                   }}
                 >
                   Add to Cart

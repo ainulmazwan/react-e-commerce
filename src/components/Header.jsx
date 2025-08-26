@@ -1,25 +1,46 @@
+import { Link } from "react-router";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
-const Header = () => {
+const Header = (props) => {
+  const { current, title } = props;
   return (
-    <>
-      {/* header */}
-      <Box
+    <Box
+      sx={{
+        py: 4,
+        textAlign: "center",
+        borderBottom: "1px solid #ddd",
+        mb: 3,
+      }}
+    >
+      <Typography
+        variant="h3"
         sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          py: 4,
-          mb: 3,
-          borderBottom: "1px solid #ddd",
+          fontWeight: "700",
         }}
       >
-        <Typography variant="h3" sx={{ fontWeight: "bold" }}>
-          Welcome to My Store
-        </Typography>
+        {title}
+      </Typography>
+      <Box
+        sx={{ display: "flex", gap: "10px", justifyContent: "center", mt: 2 }}
+      >
+        <Button
+          component={Link}
+          to="/"
+          variant={current === "home" ? "contained" : "outlined"}
+        >
+          Home
+        </Button>
+        <Button
+          component={Link}
+          to="/cart"
+          variant={current === "cart" ? "contained" : "outlined"}
+        >
+          Cart
+        </Button>
       </Box>
-    </>
+    </Box>
   );
 };
 

@@ -10,12 +10,12 @@ import TableRow from "@mui/material/TableRow";
 import { useState } from "react";
 import { Link } from "react-router";
 import Swal from "sweetalert2";
+import Header from "../components/Header";
+import { getCart } from "../utils/cart";
 
 const CartPage = () => {
-  const cartInLocalStorage = localStorage.getItem("cart");
-  const [cart, setCart] = useState(
-    cartInLocalStorage ? JSON.parse(cartInLocalStorage) : []
-  );
+  const cartData = getCart();
+  const [cart, setCart] = useState(cartData);
 
   const handleProductRemove = (id) => {
     Swal.fire({
@@ -35,41 +35,17 @@ const CartPage = () => {
     });
   };
 
-  let total = 0;
-  cart.forEach((product) => {
-    total += product.quantity * product.price;
-    console.log(total);
-  });
+  const getCartTotal = () => {
+    let total = 0;
+    cart.forEach((product) => {
+      total += product.quantity * product.price;
+    });
+    return total;
+  };
 
   return (
     <>
-      <Container
-        sx={{
-          textAlign: "center",
-          pt: 5,
-        }}
-      >
-        <Typography variant="h3" sx={{ fontWeight: "bold" }}>
-          Cart
-        </Typography>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: 3,
-            py: 3,
-            borderBottom: "1px solid #ddd",
-          }}
-        >
-          <Button sx={{ px: 3 }} variant="outlined" component={Link} to="/">
-            Home
-          </Button>
-          <Button sx={{ px: 3 }} variant="contained">
-            Cart
-          </Button>
-        </Box>
-      </Container>
+      <Header current="cart" title="Cart" />
       <Container>
         <Table>
           <TableHead>
@@ -124,7 +100,7 @@ const CartPage = () => {
               <TableCell align="right"></TableCell>
               <TableCell align="right"></TableCell>
               <TableCell sx={{ fontWeight: "bold" }} align="right">
-                ${total}
+                ${getCartTotal()}
               </TableCell>
               <TableCell align="right"></TableCell>
             </TableRow>
@@ -135,6 +111,8 @@ const CartPage = () => {
             variant="contained"
             sx={{ mt: 2 }}
             disabled={cart.length === 0 ? true : false}
+            component={Link}
+            to="/checkout"
           >
             Checkout
           </Button>
