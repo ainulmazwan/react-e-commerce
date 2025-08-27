@@ -13,6 +13,7 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Swal from "sweetalert2";
+import { toast } from "sonner";
 
 const OrdersPage = () => {
   // store orders data from API
@@ -92,13 +93,31 @@ const OrdersPage = () => {
                       <Select
                         defaultValue={order.status}
                         disabled={order.status === "pending" ? true : false}
-                        onChange={(event) => {
+                        onChange={async (event) => {
                           updateOrder(order._id, event.target.value);
+                          const updatedOrders = await getOrders();
+                          setOrders(updatedOrders);
+                          toast.success("Product has been updated");
                         }}
                       >
-                        <MenuItem value={"pending"}>Pending</MenuItem>
-                        <MenuItem value={"paid"}>Paid</MenuItem>
-                        <MenuItem value={"failed"}>Failed</MenuItem>
+                        <MenuItem
+                          value={"pending"}
+                          disabled={order.status === "pending" ? false : true}
+                        >
+                          Pending
+                        </MenuItem>
+                        <MenuItem
+                          value={"paid"}
+                          disabled={order.status === "completed" ? true : false}
+                        >
+                          Paid
+                        </MenuItem>
+                        <MenuItem
+                          value={"failed"}
+                          disabled={order.status === "completed" ? true : false}
+                        >
+                          Failed
+                        </MenuItem>
                         <MenuItem value={"completed"}>Completed</MenuItem>
                       </Select>
                     </FormControl>
