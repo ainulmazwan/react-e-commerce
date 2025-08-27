@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Container from "@mui/material/Container";
-import { getOrders } from "../utils/api_orders";
+import { getOrders, deleteOrder, updateOrder } from "../utils/api_orders";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -11,8 +11,8 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
+import Swal from "sweetalert2";
 
 const OrdersPage = () => {
   // store orders data from API
@@ -30,7 +30,27 @@ const OrdersPage = () => {
       });
   }, []); // call only once when the page loads
 
-  console.log(orders);
+  const handleOrderDelete = async (id) => {
+    Swal.fire({
+      title: "Are you sure you want to delete this order?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      // once user confirm, then we delete the product
+      if (result.isConfirmed) {
+        // delete product and the backend
+        await deleteOrder(id);
+        const updatedOrders = await getOrders();
+        setOrders(updatedOrders);
+        toast.success("Product has been deleted");
+      }
+    });
+  };
+
   return (
     <>
       <Header current="orders" title="My Orders" />
@@ -72,6 +92,9 @@ const OrdersPage = () => {
                       <Select
                         defaultValue={order.status}
                         disabled={order.status === "pending" ? true : false}
+                        onChange={(event) => {
+                          updateOrder(order._id, event.target.value);
+                        }}
                       >
                         <MenuItem value={"pending"}>Pending</MenuItem>
                         <MenuItem value={"paid"}>Paid</MenuItem>
@@ -83,7 +106,13 @@ const OrdersPage = () => {
                   <TableCell>{order.paid_at ? order.paid_at : ""}</TableCell>
                   <TableCell>
                     {order.status === "pending" ? (
-                      <Button variant="outlined" color="error">
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={() => {
+                          handleOrderDelete(order._id);
+                        }}
+                      >
                         Delete
                       </Button>
                     ) : null}
