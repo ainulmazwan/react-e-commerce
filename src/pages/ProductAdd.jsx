@@ -1,17 +1,32 @@
+import Header from "../components/Header";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
 import { useState, useEffect } from "react";
 import { addProduct } from "../utils/api_products";
-import Header from "../components/Header";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
+import { styled } from "@mui/material/styles";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 const ProductAdd = () => {
   const navigate = useNavigate();
@@ -19,6 +34,7 @@ const ProductAdd = () => {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
   const [category, setCategory] = useState("");
+  const [image, setImage] = useState(null);
 
   const handleFormSubmit = async (event) => {
     // 1. check for error
@@ -29,7 +45,8 @@ const ProductAdd = () => {
     try {
       // 2. trigger the API to create new product
       await addProduct(name, description, price, category);
-      // 3. if successful, redirect user back to homepage and show success message
+
+      // 3. if successful, redirect user back to home page and show success message
       toast.success("New product has been added");
       navigate("/");
     } catch (error) {
@@ -40,8 +57,8 @@ const ProductAdd = () => {
   return (
     <>
       <Header />
-      <Container maxWidth="md">
-        <Typography variant="h4" align="center" mb={2}>
+      <Container maxWidth="sm">
+        <Typography variant="h3" align="center" mb={2}>
           Add New Product
         </Typography>
         <Box mb={2}>
@@ -55,10 +72,10 @@ const ProductAdd = () => {
         <Box mb={2}>
           <TextField
             label="Description"
-            multiline
-            rows={3}
             fullWidth
             value={description}
+            multiline
+            rows={3}
             onChange={(e) => setDescription(e.target.value)}
           />
         </Box>
@@ -80,24 +97,56 @@ const ProductAdd = () => {
               Category
             </InputLabel>
             <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
               value={category}
-              label="Category"
+              label="Genre"
               onChange={(event) => {
                 setCategory(event.target.value);
-                // reset page back to 1
+                // reset the page back to 1
                 setPage(1);
               }}
             >
+              <MenuItem value={"Consoles"}>Consoles</MenuItem>
               <MenuItem value={"Games"}>Games</MenuItem>
               <MenuItem value={"Accessories"}>Accessories</MenuItem>
               <MenuItem value={"Subscriptions"}>Subscriptions</MenuItem>
-              <MenuItem value={"Consoles"}>Consoles</MenuItem>
             </Select>
           </FormControl>
         </Box>
+        <Box mb={2} sx={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          {image ? (
+            <>
+              <Chip label={image.name} />
+              <Button
+                color="info"
+                variant="contained"
+                size="small"
+                onClick={() => setImage(null)}
+              >
+                Remove
+              </Button>
+            </>
+          ) : (
+            <Button
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              startIcon={<CloudUploadIcon />}
+            >
+              Upload image
+              <VisuallyHiddenInput
+                type="file"
+                onChange={(event) => setImage(event.target.files[0])}
+                accept="image/*"
+              />
+            </Button>
+          )}
+        </Box>
         <Box mb={2}>
           <Button
-            variant="outlined"
+            variant="contained"
             color="primary"
             fullWidth
             onClick={handleFormSubmit}

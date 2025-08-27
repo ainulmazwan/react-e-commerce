@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
 const Header = (props) => {
-  const { current, title } = props;
+  const { current, title = "Welcome To My Store" } = props;
   return (
     <Box
       sx={{
