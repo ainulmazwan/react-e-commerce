@@ -41,7 +41,7 @@ const OrdersPage = () => {
               <TableCell>Customer</TableCell>
               <TableCell>Products</TableCell>
               <TableCell>Total Amount</TableCell>
-              <TableCell>Status</TableCell>
+              <TableCell sx={{ minWidth: "150px" }}>Status</TableCell>
               <TableCell>Payment Date</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
@@ -82,9 +82,11 @@ const OrdersPage = () => {
                   </TableCell>
                   <TableCell>{order.paid_at ? order.paid_at : ""}</TableCell>
                   <TableCell>
-                    <Button variant="outlined" color="error">
-                      Delete
-                    </Button>
+                    {order.status === "pending" ? (
+                      <Button variant="outlined" color="error">
+                        Delete
+                      </Button>
+                    ) : null}
                   </TableCell>
                 </TableRow>
               ))
