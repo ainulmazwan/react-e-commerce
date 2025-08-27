@@ -1,0 +1,99 @@
+import { useState, useEffect } from "react";
+import Header from "../components/Header";
+import Container from "@mui/material/Container";
+import { getOrders } from "../utils/api_orders";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+
+const OrdersPage = () => {
+  // store orders data from API
+  const [orders, setOrders] = useState([]);
+
+  // call the API
+  useEffect(() => {
+    getOrders()
+      .then((data) => {
+        // putting the data into orders state
+        setOrders(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []); // call only once when the page loads
+
+  console.log(orders);
+  return (
+    <>
+      <Header current="orders" title="My Orders" />
+      <Container maxWidth="lg">
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Customer</TableCell>
+              <TableCell>Products</TableCell>
+              <TableCell>Total Amount</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Payment Date</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {orders.length === 0 ? (
+              <TableRow>
+                <TableCell>No orders yet</TableCell>
+                <TableCell colSpan={5}></TableCell>
+              </TableRow>
+            ) : (
+              orders.map((order) => (
+                <TableRow key={order._id}>
+                  <TableCell>
+                    {order.customerName}
+                    <br />
+
+                    {order.customerEmail}
+                  </TableCell>
+                  <TableCell>
+                    {order.products.map((product) => (
+                      <Typography>{product.name}</Typography>
+                    ))}
+                  </TableCell>
+                  <TableCell>${order.totalPrice}</TableCell>
+                  <TableCell>
+                    <FormControl sx={{ width: "100%" }}>
+                      <Select
+                        defaultValue={order.status}
+                        disabled={order.status === "pending" ? true : false}
+                      >
+                        <MenuItem value={"pending"}>Pending</MenuItem>
+                        <MenuItem value={"paid"}>Paid</MenuItem>
+                        <MenuItem value={"failed"}>Failed</MenuItem>
+                        <MenuItem value={"completed"}>Completed</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </TableCell>
+                  <TableCell>{order.paid_at ? order.paid_at : ""}</TableCell>
+                  <TableCell>
+                    <Button variant="outlined" color="error">
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </Container>
+    </>
+  );
+};
+
+export default OrdersPage;
