@@ -15,6 +15,8 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router";
 import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { uploadImage } from "../utils/api_image";
+import { API_URL } from "../utils/constants";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -44,7 +46,7 @@ const ProductAdd = () => {
 
     try {
       // 2. trigger the API to create new product
-      await addProduct(name, description, price, category);
+      await addProduct(name, description, price, category, image);
 
       // 3. if successful, redirect user back to home page and show success message
       toast.success("New product has been added");
@@ -103,8 +105,6 @@ const ProductAdd = () => {
               label="Genre"
               onChange={(event) => {
                 setCategory(event.target.value);
-                // reset the page back to 1
-                setPage(1);
               }}
             >
               <MenuItem value={"Consoles"}>Consoles</MenuItem>
@@ -117,7 +117,7 @@ const ProductAdd = () => {
         <Box mb={2} sx={{ display: "flex", gap: "10px", alignItems: "center" }}>
           {image ? (
             <>
-              <Chip label={image.name} />
+              <img src={API_URL + image} width="200px" />
               <Button
                 color="info"
                 variant="contained"
@@ -138,7 +138,11 @@ const ProductAdd = () => {
               Upload image
               <VisuallyHiddenInput
                 type="file"
-                onChange={(event) => setImage(event.target.files[0])}
+                onChange={async (event) => {
+                  const data = await uploadImage(event.target.files[0]);
+                  // set the image url into state
+                  setImage(data.image_url);
+                }}
                 accept="image/*"
               />
             </Button>
