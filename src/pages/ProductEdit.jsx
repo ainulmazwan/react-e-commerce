@@ -10,6 +10,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { useState, useEffect } from "react";
 import { updateProduct, getProduct } from "../utils/api_products";
+import { getCategories } from "../utils/api_categories";
 import { toast } from "sonner";
 import { useNavigate, useParams, Link } from "react-router";
 import { styled } from "@mui/material/styles";
@@ -33,6 +34,7 @@ const VisuallyHiddenInput = styled("input")({
 const ProductEdit = () => {
   const { id } = useParams(); // retrieve the id from the URL
   const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
@@ -62,6 +64,12 @@ const ProductEdit = () => {
         setError("Product not found");
       });
   }, [id]);
+
+  useEffect(() => {
+    getCategories().then((data) => {
+      setCategories(data);
+    });
+  }, []);
 
   const handleFormSubmit = async (event) => {
     // 1. check for error
@@ -147,14 +155,11 @@ const ProductEdit = () => {
               label="Genre"
               onChange={(event) => {
                 setCategory(event.target.value);
-                // reset the page back to 1
-                setPage(1);
               }}
             >
-              <MenuItem value={"Consoles"}>Consoles</MenuItem>
-              <MenuItem value={"Games"}>Games</MenuItem>
-              <MenuItem value={"Accessories"}>Accessories</MenuItem>
-              <MenuItem value={"Subscriptions"}>Subscriptions</MenuItem>
+              {categories.map((cat) => (
+                <MenuItem value={cat._id}>{cat.label}</MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Box>

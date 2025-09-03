@@ -11,6 +11,7 @@ import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import { useState, useEffect } from "react";
 import { addProduct } from "../utils/api_products";
+import { getCategories } from "../utils/api_categories";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
 import { styled } from "@mui/material/styles";
@@ -32,11 +33,18 @@ const VisuallyHiddenInput = styled("input")({
 
 const ProductAdd = () => {
   const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
   const [category, setCategory] = useState("");
   const [image, setImage] = useState(null);
+
+  useEffect(() => {
+    getCategories().then((data) => {
+      setCategories(data);
+    });
+  }, []);
 
   const handleFormSubmit = async (event) => {
     // 1. check for error
@@ -107,10 +115,9 @@ const ProductAdd = () => {
                 setCategory(event.target.value);
               }}
             >
-              <MenuItem value={"Consoles"}>Consoles</MenuItem>
-              <MenuItem value={"Games"}>Games</MenuItem>
-              <MenuItem value={"Accessories"}>Accessories</MenuItem>
-              <MenuItem value={"Subscriptions"}>Subscriptions</MenuItem>
+              {categories.map((cat) => (
+                <MenuItem value={cat._id}>{cat.label}</MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Box>

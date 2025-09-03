@@ -21,7 +21,6 @@ import {
 } from "../utils/api_categories";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
-import { tableSortLabelClasses } from "@mui/material";
 
 const CategoriesPage = () => {
   const [categories, setCategories] = useState([]);
