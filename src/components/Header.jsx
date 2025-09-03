@@ -2,9 +2,14 @@ import { Link } from "react-router";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import { useCookies } from "react-cookie";
+import { useNavigate } from "react-router";
 
 const Header = (props) => {
+  const navigate = useNavigate();
   const { current, title = "Welcome To My Store" } = props;
+  const [cookies, setCookie, removeCookie] = useCookies("currentuser");
+  const { currentuser } = cookies;
   return (
     <Box
       sx={{
@@ -22,6 +27,12 @@ const Header = (props) => {
       >
         {title}
       </Typography>
+      {currentuser && (
+        <Typography variant="body1" align="center">
+          Current Logged In User : <br />
+          {currentuser.name} ({currentuser.email})
+        </Typography>
+      )}
       <Box
         sx={{ display: "flex", gap: "10px", justifyContent: "center", mt: 2 }}
       >
@@ -53,20 +64,38 @@ const Header = (props) => {
         >
           Categories
         </Button>
-        <Button
-          component={Link}
-          to="/login"
-          variant={current === "login" ? "contained" : "outlined"}
-        >
-          Login
-        </Button>
-        <Button
-          component={Link}
-          to="/signup"
-          variant={current === "signup" ? "contained" : "outlined"}
-        >
-          Signup
-        </Button>
+        {currentuser ? (
+          <>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                // remove cookie
+                removeCookie("currentuser");
+                // redirect to home
+                navigate("/");
+              }}
+            >
+              Logout
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              component={Link}
+              to="/login"
+              variant={current === "login" ? "contained" : "outlined"}
+            >
+              Login
+            </Button>
+            <Button
+              component={Link}
+              to="/signup"
+              variant={current === "signup" ? "contained" : "outlined"}
+            >
+              Signup
+            </Button>
+          </>
+        )}
       </Box>
     </Box>
   );

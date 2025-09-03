@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router";
 import { Toaster } from "sonner";
+import { CookiesProvider } from "react-cookie";
 
 import Products from "./pages/Products";
 import ProductAdd from "./pages/ProductAdd";
@@ -14,7 +15,7 @@ import SignupPage from "./pages/SignupPage";
 
 function App() {
   return (
-    <div className="App">
+    <CookiesProvider >
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Products />} />
@@ -30,7 +31,7 @@ function App() {
         </Routes>
         <Toaster />
       </BrowserRouter>
-    </div>
+    </CookiesProvider>
   );
 }
 

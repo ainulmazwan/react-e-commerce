@@ -11,9 +11,11 @@ import { useState } from "react";
 import { signup } from "../utils/api_users";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
+import { useCookies } from "react-cookie";
 
 const SignupPage = () => {
   const navigate = useNavigate();
+  const [cookies, setCookie, removeCookie] = useCookies(["currentuser"]);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -30,7 +32,12 @@ const SignupPage = () => {
       toast.error("Passwords should match");
     } else {
       try {
-        await signup(name, email, password);
+        const userData = await signup(name, email, password);
+        // set cookie
+        setCookie("currentuser", userData, {
+          maxAge: 60 * 60 * 8, // expire in 8 hours
+        });
+        // toast and navigate
         toast.success("Account has been created!");
         navigate("/");
       } catch (error) {
@@ -74,7 +81,7 @@ const SignupPage = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </Box>
-            <Box mb={2}>
+            <Box mb={2}>  
               <Typography>Confirm password</Typography>
               <TextField
                 type="password"

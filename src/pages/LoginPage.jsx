@@ -11,9 +11,11 @@ import { login } from "../utils/api_users";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
+import { useCookies } from "react-cookie";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const [cookies, setCookie, removeCookie] = useCookies(["currentuser"]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,7 +26,12 @@ const LoginPage = () => {
       toast.error("Fill in all the fields");
     } else {
       try {
-        await login(email, password);
+        const userData = await login(email, password);
+        // set cookie
+        setCookie("currentuser", userData, {
+          maxAge: 60 * 60 * 8, // expire in 8 hours
+        });
+        // toast and navigate
         toast.success("Successfully logged in!");
         navigate("/");
       } catch (error) {

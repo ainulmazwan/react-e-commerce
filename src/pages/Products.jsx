@@ -21,8 +21,12 @@ import Swal from "sweetalert2";
 import { toast } from "sonner";
 import { addToCart } from "../utils/cart";
 import { API_URL } from "../utils/constants";
+import { useCookies } from "react-cookie";
 
 const Products = () => {
+  const [cookies] = useCookies("currentuser");
+
+  
   // to store the data from /products
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
