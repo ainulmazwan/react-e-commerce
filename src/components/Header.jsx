@@ -72,7 +72,8 @@ const Header = (props) => {
                 // remove cookie
                 removeCookie("currentuser");
                 // redirect to home
-                navigate("/");
+                // navigate("/");
+                window.location.href = "/"; // for logout only can
               }}
             >
               Logout

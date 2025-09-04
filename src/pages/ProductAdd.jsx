@@ -17,6 +17,7 @@ import { useNavigate } from "react-router";
 import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { uploadImage } from "../utils/api_image";
+import { useCookies } from "react-cookie";
 import { API_URL } from "../utils/constants";
 
 const VisuallyHiddenInput = styled("input")({
@@ -33,12 +34,18 @@ const VisuallyHiddenInput = styled("input")({
 
 const ProductAdd = () => {
   const navigate = useNavigate();
+  const [cookies] = useCookies("currentuser");
+  const { currentuser = {} } = cookies; // assign empty object to avoid error if user is not logged in
+  const { token = "" } = currentuser;
+
   const [categories, setCategories] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
   const [category, setCategory] = useState("");
   const [image, setImage] = useState(null);
+
+  console.log(currentuser.token);
 
   useEffect(() => {
     getCategories().then((data) => {
@@ -54,7 +61,7 @@ const ProductAdd = () => {
 
     try {
       // 2. trigger the API to create new product
-      await addProduct(name, description, price, category, image);
+      await addProduct(name, description, price, category, image, token);
 
       // 3. if successful, redirect user back to home page and show success message
       toast.success("New product has been added");
