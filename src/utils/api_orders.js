@@ -2,8 +2,12 @@ import axios from "axios";
 
 import { API_URL } from "./constants";
 
-export const getOrders = async () => {
-  const response = await axios.get(API_URL + "orders");
+export const getOrders = async (token) => {
+  const response = await axios.get(API_URL + "orders", {
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
   return response.data;
 };
 
@@ -23,16 +27,28 @@ export const createOrder = async (
   return response.data;
 };
 
-export async function updateOrder(id, status) {
+export async function updateOrder(id, status, token) {
   // PUT http://localhost:5173/products/68a56c44111453c6a3e27620
-  const response = await axios.put(API_URL + "orders/" + id, {
-    status,
-  });
+  const response = await axios.put(
+    API_URL + "orders/" + id,
+    {
+      status,
+    },
+    {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    }
+  );
   return response.data;
 }
 
-export async function deleteOrder(id) {
+export async function deleteOrder(id, token) {
   // DELETE http://localhost:5173/products/68a56c44111453c6a3e27620
-  const response = await axios.delete(API_URL + "orders/" + id);
+  const response = await axios.delete(API_URL + "orders/" + id, {
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
   return response.data;
 }

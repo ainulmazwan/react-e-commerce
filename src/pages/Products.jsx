@@ -49,7 +49,6 @@ const Products = () => {
     });
   }, []);
 
-  console.log(categories);
   const handleProductDelete = async (id) => {
     Swal.fire({
       title: "Are you sure you want to delete this product?",
